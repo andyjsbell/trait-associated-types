@@ -1,0 +1,3 @@
+# trait-associated-types
+
+The options one has with generics, traits and associated types...
