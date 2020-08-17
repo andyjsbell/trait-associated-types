@@ -68,6 +68,31 @@ impl<P: Hash + Eq, V: Zero + Copy> Hero2<P, V> {
     }
 }
 
+pub trait Config {
+    type Prop: Hash + Eq;
+    type Value: Zero + Copy;
+}
+
+pub struct Hero3<C:Config> {
+    props: HashMap<C::Prop, C::Value>
+}
+
+impl <C: Config> Hero3<C> {
+    pub fn new() -> Self {
+        Self {
+            props: HashMap::new()
+        }
+    }
+
+    pub fn set_prop(&mut self, prop: C::Prop, value: C::Value) {
+        self.props.insert(prop, value);
+    }
+
+    pub fn get_prop(&self, prop: C::Prop) -> C::Value {
+        *self.props.get(&prop).unwrap_or(&C::Value::zero())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -88,6 +113,18 @@ mod tests {
     #[test]
     fn third_hero() {
         let mut hero = Hero2::<u8, u32>::new();
+        hero.set_prop(1, 100);
+        assert_eq!(100, hero.get_prop(1));
+    }
+
+    #[test]
+    fn fourth_hero() {
+        struct MyConfig;
+        impl Config for MyConfig {
+            type Prop = u8;
+            type Value = u32;
+        }
+        let mut hero = Hero3::<MyConfig>::new();
         hero.set_prop(1, 100);
         assert_eq!(100, hero.get_prop(1));
     }
